@@ -24,5 +24,6 @@ public class TryAgainDialogue : Dialogue
     public void UpdateStatus(string newStatus)
     {
         _statusStateText.Value = newStatus;
+        RefreshText();
     }
 }

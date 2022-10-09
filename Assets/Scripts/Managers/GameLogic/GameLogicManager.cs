@@ -76,9 +76,14 @@ public class GameLogicManager : MonoBehaviour
         }
     }
 
-    private bool HaveLost()
+    private bool HaveMadeLostTurn(Pocket fromPocket, Pocket toPocket)
     {
-        return false;
+        // return (fromPocket == littlePocket || fromPocket == bigPocket) && 
+        //        (toPocket != littlePocket && toPocket != bigPocket) &&
+        //        toPocket != pocketsInGrid[4];
+        return (fromPocket == littlePocket || fromPocket == bigPocket) &&
+               (toPocket != littlePocket && toPocket != bigPocket) &&
+               !HaveWon();
     }
 
     private bool HaveWon()
@@ -127,10 +132,14 @@ public class GameLogicManager : MonoBehaviour
         if (HaveWon())
         {
             StartCoroutine(WinCoroutine());
-            return;
         }
+    }
 
-        if (HaveLost())
+    public void CheckTurn(Pocket fromPocket, Pocket toPocket)
+    {
+        CheckGame();
+
+        if (HaveMadeLostTurn(fromPocket, toPocket))
         {
             Lose();
         }

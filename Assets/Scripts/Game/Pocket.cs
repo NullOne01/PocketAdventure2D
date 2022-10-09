@@ -66,10 +66,11 @@ public class Pocket : MonoBehaviour, IDropHandler
             return;
         }
 
+        Pocket prevPocket = newBlock.AttachedPocket;
         if (CanTakeBlock())
         {
             AttachBlock(newBlock);
-            GameManager.Instance.GetComponentInChildren<GameLogicManager>().CheckGame();
+            GameManager.Instance.GetComponentInChildren<GameLogicManager>().CheckTurn(prevPocket, this);
         }
     }
 
