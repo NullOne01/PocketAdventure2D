@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,8 +10,20 @@ public class Pocket : MonoBehaviour, IDropHandler
     [field: SerializeField] public bool ContainBlockOnInit { get; set; }
     [SerializeField] private GameObject blockPrefab;
 
+    private GameLogicManager _gameLogicManager;
+
+    private void Start()
+    {
+        _gameLogicManager = GameManager.Instance.GetComponentInChildren<GameLogicManager>();
+    }
+
     public void CreateAndAttachBlock()
     {
+        if (AttachedBlock != null)
+        {
+            Destroy(AttachedBlock.gameObject);
+        }
+
         GameObject newBlock = Instantiate(blockPrefab, transform, false);
         AttachBlock(newBlock.GetComponent<Block>());
     }
@@ -34,13 +47,18 @@ public class Pocket : MonoBehaviour, IDropHandler
         {
             return;
         }
-        
+
         Destroy(AttachedBlock.gameObject);
         AttachedBlock = null;
     }
 
     public void OnDrop(PointerEventData eventData)
     {
+        if (!_gameLogicManager.CanPlayGame)
+        {
+            return;
+        }
+
         Block newBlock = eventData.pointerDrag.GetComponent<Block>();
         if (newBlock == null)
         {

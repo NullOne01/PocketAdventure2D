@@ -8,7 +8,9 @@ public class GameLogicManager : MonoBehaviour
     [SerializeField] private List<Pocket> pocketsInGrid;
     [SerializeField] private Pocket littlePocket;
     [SerializeField] private Pocket bigPocket;
-    
+    [SerializeField] private float secondsWaitWin = 1.5f;
+
+    public bool CanPlayGame { get; set; } = true;
     private List<Pocket> pockets = new List<Pocket>();
     private List<IntSaveVariable> pocketStates = new List<IntSaveVariable>();
 
@@ -17,7 +19,7 @@ public class GameLogicManager : MonoBehaviour
         pockets.AddRange(pocketsInGrid);
         pockets.Add(littlePocket);
         pockets.Add(bigPocket);
-        
+
         for (int i = 0; i < pockets.Count; i++)
         {
             pocketStates.Add(new IntSaveVariable("Pocket" + i, -1));
@@ -27,6 +29,20 @@ public class GameLogicManager : MonoBehaviour
     private void Start()
     {
         LoadStates();
+    }
+
+    public void StartGame()
+    {
+        CanPlayGame = true;
+        LoadStates();
+    }
+
+    private void ResetStates()
+    {
+        foreach (var state in pocketStates)
+        {
+            state.DeleteValue();
+        }
     }
 
     private void SaveStates()
@@ -48,7 +64,7 @@ public class GameLogicManager : MonoBehaviour
             }
 
             if (pocketStates[i].Value == 1)
-            { 
+            {
                 pockets[i].CreateAndAttachBlock();
             }
             else
@@ -58,12 +74,63 @@ public class GameLogicManager : MonoBehaviour
         }
     }
 
+    private bool HaveLost()
+    {
+        return false;
+    }
+
+    private bool HaveWon()
+    {
+        return pockets[3].AttachedBlock != null &&
+               pockets[4].AttachedBlock != null &&
+               pockets[5].AttachedBlock != null;
+    }
+
     private void Lose()
     {
+        CanPlayGame = false;
+        WindowManager windowManager = GameManager.Instance.GetComponentInChildren<WindowManager>();
+        TryAgainDialogue tryAgainDialogue = windowManager.ShowDialogue("TryAgain") as TryAgainDialogue;
+        if (tryAgainDialogue != null)
+        {
+            tryAgainDialogue.UpdateStatus("Mistake");
+        }
+
+        ResetStates();
+    }
+
+    private IEnumerator WinCoroutine()
+    {
+        CanPlayGame = false;
+        pockets[3].AttachedBlock.PlayWinAnimation();
+        pockets[4].AttachedBlock.PlayWinAnimation();
+        pockets[5].AttachedBlock.PlayWinAnimation();
+
+        yield return new WaitForSeconds(secondsWaitWin);
+
+        WindowManager windowManager = GameManager.Instance.GetComponentInChildren<WindowManager>();
+        TryAgainDialogue tryAgainDialogue = windowManager.ShowDialogue("TryAgain") as TryAgainDialogue;
+        if (tryAgainDialogue != null)
+        {
+            tryAgainDialogue.UpdateStatus("Victory");
+        }
+
+        ResetStates();
     }
 
     public void CheckGame()
     {
         SaveStates();
+
+        if (HaveWon())
+        {
+            StartCoroutine(WinCoroutine());
+            return;
+        }
+
+        if (HaveLost())
+        {
+            Lose();
+        }
     }
 }

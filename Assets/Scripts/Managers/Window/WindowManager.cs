@@ -28,10 +28,11 @@ public class WindowManager : MonoBehaviour
         RefreshAll();
     }
 
-    public void ShowWindow(string windowName)
+    public Window ShowWindow(string windowName)
     {
         Window window = windows.Find(o => o.ScreenName == windowName);
         ShowWindow(window);
+        return window;
     }
 
     public void ShowDialogue(Dialogue dialogue)
@@ -41,18 +42,22 @@ public class WindowManager : MonoBehaviour
             throw new ArgumentException("Argument is not dialogue");
         }
 
+        // Stop time if dialogue is chosen
+        Time.timeScale = 0;
         currentDialogueName.Value = dialogue.ScreenName;
         RefreshAll();
     }
 
-    public void ShowDialogue(string dialogueName)
+    public Dialogue ShowDialogue(string dialogueName)
     {
         Dialogue dialogue = dialogues.Find(o => o.ScreenName == dialogueName);
         ShowDialogue(dialogue);
+        return dialogue;
     }
 
     public void HideDialogues()
     {
+        Time.timeScale = 1f;
         currentDialogueName.Value = null;
         RefreshAll();
     }

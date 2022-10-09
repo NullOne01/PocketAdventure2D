@@ -14,6 +14,11 @@ public class SaveStateVariable<T>
         set => throw new NotImplementedException("Setter is not overriden.");
     }
 
+    public void DeleteValue()
+    {
+        PlayerPrefs.DeleteKey(_key);
+    }
+
     public SaveStateVariable(string key, T defaultValue)
     {
         _key = key;
