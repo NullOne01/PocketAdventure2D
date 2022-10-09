@@ -5,22 +5,17 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     private AudioSource _backgroundMusicSource;
+    private FloatSaveVariable _volume = new FloatSaveVariable("BackgroundMusicVolume", 1f);
     
     void Awake()
     {
         _backgroundMusicSource = GetComponent<AudioSource>();
-        SetUpBackMusic();
-    }
-
-    private void SetUpBackMusic()
-    {
-        float volume = PlayerPrefs.GetFloat("BackgroundMusicVolume", 1f);
-        _backgroundMusicSource.volume = volume;
+        _backgroundMusicSource.volume = _volume.Value;
     }
 
     public void SetBackMusicVolume(float newValue)
     {
-        PlayerPrefs.SetFloat("BackgroundMusicVolume", newValue);
+        _volume.Value = newValue;
         _backgroundMusicSource.volume = newValue;
     }
 }
