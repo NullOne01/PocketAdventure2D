@@ -5,30 +5,38 @@ using UnityEngine.EventSystems;
 
 public class Pocket : MonoBehaviour, IDropHandler
 {
-    [SerializeField] private Block attachedBlock;
-    [SerializeField] private bool containBlockOnInit;
+    [field: SerializeField] public Block AttachedBlock { get; private set; }
+    [field: SerializeField] public bool ContainBlockOnInit { get; set; }
     [SerializeField] private GameObject blockPrefab;
 
-    private void Start()
+    public void CreateAndAttachBlock()
     {
-        if (containBlockOnInit && attachedBlock == null)
-        {
-            GameObject newBlock = Instantiate(blockPrefab, transform, false);
-            AttachBlock(newBlock.GetComponent<Block>());
-        }
+        GameObject newBlock = Instantiate(blockPrefab, transform, false);
+        AttachBlock(newBlock.GetComponent<Block>());
     }
 
     public void AttachBlock(Block block)
     {
         if (block.AttachedPocket != null)
         {
-            block.AttachedPocket.attachedBlock = null;
+            block.AttachedPocket.AttachedBlock = null;
         }
 
-        attachedBlock = block;
+        AttachedBlock = block;
         block.transform.SetParent(transform, false);
         block.AttachedPocket = this;
         block.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+    }
+
+    public void DetachBlock()
+    {
+        if (AttachedBlock == null)
+        {
+            return;
+        }
+        
+        Destroy(AttachedBlock.gameObject);
+        AttachedBlock = null;
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -43,11 +51,12 @@ public class Pocket : MonoBehaviour, IDropHandler
         if (CanTakeBlock())
         {
             AttachBlock(newBlock);
+            GameManager.Instance.GetComponentInChildren<GameLogicManager>().CheckGame();
         }
     }
 
     private bool CanTakeBlock()
     {
-        return attachedBlock == null;
+        return AttachedBlock == null;
     }
 }
