@@ -29,12 +29,14 @@ public class GameLogicManager : MonoBehaviour
     private void Start()
     {
         LoadStates();
+        CheckGame();
     }
 
     public void StartGame()
     {
         CanPlayGame = true;
         LoadStates();
+        CheckGame();
     }
 
     private void ResetStates()

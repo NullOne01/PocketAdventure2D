@@ -13,7 +13,7 @@ public class Block : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHan
     private CanvasGroup _canvasGroup;
     private Animator _animator;
 
-    private void Start()
+    private void Awake()
     {
         _gameLogicManager = GameManager.Instance.GetComponentInChildren<GameLogicManager>();
         _canvasGroup = GetComponent<CanvasGroup>();

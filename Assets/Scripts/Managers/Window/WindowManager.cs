@@ -41,9 +41,7 @@ public class WindowManager : MonoBehaviour
         {
             throw new ArgumentException("Argument is not dialogue");
         }
-
-        // Stop time if dialogue is chosen
-        Time.timeScale = 0;
+        
         currentDialogueName.Value = dialogue.ScreenName;
         RefreshAll();
     }
@@ -57,7 +55,6 @@ public class WindowManager : MonoBehaviour
 
     public void HideDialogues()
     {
-        Time.timeScale = 1f;
         currentDialogueName.Value = null;
         RefreshAll();
     }
@@ -76,7 +73,13 @@ public class WindowManager : MonoBehaviour
 
         if (!string.IsNullOrEmpty(currentDialogueName.Value))
         {
+            // Stop time if dialogue is chosen. Should be replaced by some other variable
+            Time.timeScale = 0;
             dialogues.Find(o => o.ScreenName == currentDialogueName.Value).gameObject.SetActive(true);
+        }
+        else
+        {
+            Time.timeScale = 1;
         }
     }
 }
